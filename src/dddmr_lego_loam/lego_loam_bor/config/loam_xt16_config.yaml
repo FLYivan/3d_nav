@@ -1,0 +1,67 @@
+lego_loam_ip:
+  ros__parameters:
+    use_sim_time: false
+    # leishen16
+    laser:
+        odom_type: "laser_odometry"         #wheel_odometry/laser_odometry 
+        base_ground_frame: "base_link"
+        num_vertical_scans: 16
+        num_horizontal_scans: 1000
+        vertical_angle_bottom: -15.0          # degrees
+        vertical_angle_top: 15.0            # degrees
+        scan_period: 0.1                   # seconds
+
+    imageProjection:
+        segment_valid_point_num: 5
+        segment_valid_line_num: 2
+        segment_theta: 60.0                      # 减小此值可以提高准确性
+        minimum_detection_range: 0.5
+        maximum_detection_range: 100.0            # 投影图像时使用此范围内的点云
+        distance_for_patch_between_rings: 1.0     # 对于圈与圈之间小于1米的地面进行拼接，例如 ring0 和 ring1 小于1米则拼接
+        stitcher_num: 0                           # 针对非重复扫描雷达（如 mid360），建议设置为2~4
+        trt_model_path: ""                        # 提供 yolo 的 trt 引擎路径
+        projected_image_stack_size: 1             # yolo11n 时序推理时，堆叠的投影图像数量（仅在加载 TRT 时有效）
+        ground_slope_tolerance: 0.34
+        ground_dz_tolerance: 0.1
+        patch_first_ring_to_baselink: true
+
+        ground_fov_bottom: -0.2617994 # -15deg     调整地面视野参数，确保你第一帧的地面不是空心的，然后慢慢移动机器人，看看地面是否完美构建
+        ground_fov_top: -0.087266 # -5deg
+        ground_positive_start: 0.0
+        ground_positive_stop: 3.1415926
+        ground_negative_start: 0.0
+        ground_negative_stop: -3.1415926
+
+lego_loam_fa:
+  ros__parameters:
+    use_sim_time: false
+    featureAssociation:                              
+        edge_threshold: 0.1
+        surf_threshold: 0.1
+        nearest_feature_search_distance: 3.0
+
+    mapping:
+        to_map_optimization: true
+
+lego_loam_mo:
+  ros__parameters:
+    use_sim_time: false
+    mapping:
+
+        distance_between_key_frame: 1.0
+        angle_between_key_frame: 1.0
+
+        enable_loop_closure: true
+
+        surrounding_keyframe_search_num: 20
+        history_keyframe_search_radius: 12.0
+        history_keyframe_search_num: 5
+        history_keyframe_fitness_score: 0.5
+        
+        ground_voxel_size: 0.3
+
+lego_loam_map_visualization:
+  ros__parameters:
+    use_sim_time: false
+    ground_voxel_size: 0.3
+    ground_edge_threshold_num: 50
