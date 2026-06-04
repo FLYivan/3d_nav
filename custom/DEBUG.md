@@ -1,24 +1,33 @@
 # go2真机部署
 
 ## dddnav 部署
-1、编译
-
-使用ws_build 命令，等价于	
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
-
-2、宿主机挂载位置
-
-宿主机
-    $HOME/dddmr_navigation
-容器内
-    /root/dddmr_navigation
+1、确保已安装docker
 
 
-3、启动建图
-ros2 launch dddmr_beginner_guide hesai_xt16_mapping.launch
+2、启动容器
+cd ~/dog_robot/lib/3d_nav/dddmr_docker/docker_file && ./run_go2_gpu.bash
 
-4、保存地图
+
+
+3、容器内编译
+
+
+cd dddmr_navigation/ && source /opt/ros/humble/setup.bash && colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+cd dddmr_navigation/ && source /opt/ros/humble/setup.bash && ws_build
+
+
+4、启动建图
+source install/setup.bash && ros2 launch dddmr_beginner_guide hesai_xt16_mapping.launch
+
+5、保存地图
 1）打开一个新终端
+docker exec -it <容器名或ID> bash
+# 进容器后
+tmux
+# Ctrl+b 再按 c  → 新窗口
+# Ctrl+b 再按 %  → 左右分屏
+
 ros2 service call /save_mapped_point_cloud std_srvs/srv/Empty
 
 
