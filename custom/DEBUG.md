@@ -3,21 +3,30 @@
 ## dddnav 部署
 1、确保已安装docker
 
+安装dds
+
+apt-get update
+apt-get install -y ros-humble-rmw-cyclonedds-cpp
+
+确认是否安装
+ls /opt/ros/humble/lib/librmw_cyclonedds_cpp.so
 
 2、启动容器
 cd ~/dog_robot/lib/3d_nav/dddmr_docker/docker_file && ./run_go2_gpu.bash
 
+docker rm -f dddmr_humble_l4t_dev
 
+-v /home/unitree/cyclonedds_ws/cyclonedds.xml:/root/cyclonedds.xml:ro
+-e ROS_DOMAIN_ID=0
+-e RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+-e CYCLONEDDS_URI=file:///root/cyclonedds.xml
 
 3、容器内编译
-
-
-cd dddmr_navigation/ && source /opt/ros/humble/setup.bash && colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
-
 cd dddmr_navigation/ && source /opt/ros/humble/setup.bash && ws_build
 
 
 4、启动建图
+cd dddmr_navigation/ && source /opt/ros/humble/setup.bash 
 source install/setup.bash && ros2 launch dddmr_beginner_guide hesai_xt16_mapping.launch
 
 5、保存地图
@@ -50,15 +59,15 @@ ros2 launch dddmr_beginner_guide hesai_xt16_navigation.launch
 ## 必要话题发布和订阅
 
 
-/cmd_vel geometry_msgs/msg/Twist
-/lidar_point_cloud sensor_msgs/msg/PointCloud2
-/odom nav_msgs/msg/Odometry
-/tf 	tf2_msgs/msg/TFMessage
+/cmd_vel                    geometry_msgs/msg/Twist
+/lidar_point_cloud          sensor_msgs/msg/PointCloud2
+/odom                       nav_msgs/msg/Odometry
+/tf 	                    tf2_msgs/msg/TFMessage
 
 切换到go2_pc2分支
     ros2 launch go2_nav 3d_nav_real_go2.launch.py
 
-
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select go2_nav
 
 ## 调试调参
 

@@ -11,7 +11,7 @@
   <!-- <node pkg="tf2_ros" exec="static_transform_publisher" name="baselink2c16"  args="0.2 0 0.22 0.0 0.78539815 0 base_link airy" /> -->
 
   <!--- Rviz -->
-  <node pkg="rviz2" exec="rviz2" output="screen" respawn="false" args="-d $(find-pkg-share dddmr_beginner_guide)/rviz/hesai_xt16_mapping.rviz">
-  </node>
+  <!-- <node pkg="rviz2" exec="rviz2" output="screen" respawn="false" args="-d $(find-pkg-share dddmr_beginner_guide)/rviz/hesai_xt16_mapping.rviz">
+  </node> -->
 
 </launch>

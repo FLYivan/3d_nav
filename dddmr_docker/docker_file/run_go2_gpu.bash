@@ -31,12 +31,12 @@ elif [ "$is_l4t_r36" != "" ] ;then
     docker run -it \
         --privileged \
         --network=host \
-        --runtime=nvidia\
+        # --runtime=nvidia\
         --env="DISPLAY" \
         --env="QT_X11_NO_MITSHM=1" \
-        --env="NVIDIA_VISIBLE_DEVICES=all"\
-        --env="NVIDIA_DRIVER_CAPABILITIES=all"\
-        --env="ROS_DOMAIN_ID=${domain_id}" \
+        # --env="NVIDIA_VISIBLE_DEVICES=all"\
+        # --env="NVIDIA_DRIVER_CAPABILITIES=all"\
+        # --env="ROS_DOMAIN_ID=${domain_id}" \
         --volume="/dev:/dev" \
         --volume="/tmp:/tmp" \
         --volume="${HOME}/go2_patrol/map:/root/dddmr_bags" \
