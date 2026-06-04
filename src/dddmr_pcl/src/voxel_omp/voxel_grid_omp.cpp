@@ -482,13 +482,16 @@ pcl::VoxelGridOMP::applyFilter(PointCloud &output)
         final_num += cloud->size();
     }
     output.resize(final_num);
-    char* dst= reinterpret_cast<char*>(&output[0]);
-    size_t offset = 0;
-    for(auto& cloud: final_clouds){
-        size_t copy_size = cloud->size()*sizeof(PointT);
-        char* src = reinterpret_cast<char*>(&((cloud->points)[0]));
-        std::memcpy(dst+offset, src, copy_size);
-        offset+=copy_size;
+    if (final_num > 0) {
+        char* dst = reinterpret_cast<char*>(&output[0]);
+        size_t offset = 0;
+        for(auto& cloud: final_clouds){
+            size_t copy_size = cloud->size()*sizeof(PointT);
+            if (copy_size == 0) continue;
+            char* src = reinterpret_cast<char*>(&((cloud->points)[0]));
+            std::memcpy(dst+offset, src, copy_size);
+            offset+=copy_size;
+        }
     }
 }
 
