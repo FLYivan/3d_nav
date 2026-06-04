@@ -54,6 +54,10 @@ size_t AssignTask(const std::vector<std::shared_ptr<std::vector<int>>>& index_al
     // 确定每个进程分配voxel索引的上下界
     std::sort(sampled_data.begin(), sampled_data.end());
     tasks->resize(thread_num);
+    if (sampled_data.empty()) {
+        for (auto& task : *tasks) task.clear();
+        return total;
+    }
     int pad_size = sampled_data.size()%thread_num;
     int pivot_step = sampled_data.size()/thread_num;
     for(int i=0; i<thread_num; ++i){

@@ -11,6 +11,14 @@ apt-get install -y ros-humble-rmw-cyclonedds-cpp
 确认是否安装
 ls /opt/ros/humble/lib/librmw_cyclonedds_cpp.so
 
+
+# 在宿主机
+docker cp /home/unitree/cyclonedds_ws/cyclonedds.xml dddmr_humble_l4t_dev:/root/cyclonedds.xml
+
+# 在容器内
+export CYCLONEDDS_URI=file:///root/cyclonedds.xml
+ros2 daemon stop && ros2 topic list
+
 2、启动容器
 cd ~/dog_robot/lib/3d_nav/dddmr_docker/docker_file && ./run_go2_gpu.bash
 
