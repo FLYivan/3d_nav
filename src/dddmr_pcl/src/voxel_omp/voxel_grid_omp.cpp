@@ -55,7 +55,35 @@ size_t AssignTask(const std::vector<std::shared_ptr<std::vector<int>>>& index_al
     std::sort(sampled_data.begin(), sampled_data.end());
     tasks->resize(thread_num);
 
-    auto assign_all_to_first_thread = [&]() {
+    if (static_cast<int>(sampled_data.size()) >= thread_num) {
+        // 正常路径：样本足够，按 pivot 分配
+        int pad_size = static_cast<int>(sampled_data.size()) % thread_num;
+        int pivot_step = static_cast<int>(sampled_data.size()) / thread_num;
+        for(int i=0; i<thread_num; ++i){
+            int start = pivot_step*i;
+            start += (i>pad_size?pad_size:i);
+            int pivot_start = sampled_data[start];
+            int pivot_end = 0;
+            if(i+1<thread_num){
+                int end = pivot_step*(i+1);
+                end += (i+1>pad_size?pad_size:i+1);
+                pivot_end = sampled_data[end];
+            }
+            auto& cur_task = (*tasks)[i];
+            cur_task.resize(index_all_thread.size());
+            for(size_t j=0; j<cur_task.size(); ++j){
+                auto start_it = std::lower_bound(index_all_thread[j]->begin(), index_all_thread[j]->end(),pivot_start);
+                cur_task[j].first = int(start_it - index_all_thread[j]->begin());
+                if(i+1>=thread_num){
+                    cur_task[j].second = static_cast<int>(index_all_thread[j]->size());
+                }else{
+                    auto end_it = std::lower_bound(index_all_thread[j]->begin(), index_all_thread[j]->end(),pivot_end);
+                    cur_task[j].second = int(end_it-index_all_thread[j]->begin());
+                }
+            }
+        }
+    } else {
+        // 降级路径：样本不足，全部交给线程 0 处理
         for (int i = 0; i < thread_num; ++i) {
             auto& cur_task = (*tasks)[i];
             cur_task.resize(index_all_thread.size());
@@ -64,42 +92,10 @@ size_t AssignTask(const std::vector<std::shared_ptr<std::vector<int>>>& index_al
                     cur_task[j].first = 0;
                     cur_task[j].second = static_cast<int>(index_all_thread[j]->size());
                 } else {
-                    const int end = static_cast<int>(index_all_thread[j]->size());
-                    cur_task[j].first = end;
-                    cur_task[j].second = end;
+                    const int end_val = static_cast<int>(index_all_thread[j]->size());
+                    cur_task[j].first = end_val;
+                    cur_task[j].second = end_val;
                 }
-            }
-        }
-    };
-
-    // sampled_data 为空，或数量少于线程数时，原 pivot 分配会越界
-    if (sampled_data.empty() || static_cast<int>(sampled_data.size()) < thread_num) {
-        assign_all_to_first_thread();
-        return total;
-    }
-
-    int pad_size = sampled_data.size()%thread_num;
-    int pivot_step = sampled_data.size()/thread_num;
-    for(int i=0; i<thread_num; ++i){
-        int start = pivot_step*i;
-        start += (i>pad_size?pad_size:i);
-        int pivot_start = sampled_data[start];
-        int pivot_end;
-        if(i+1<thread_num){
-            int end = pivot_step*(i+1);
-            end += (i+1>pad_size?pad_size:i+1);
-            pivot_end = sampled_data[end];
-        }
-        auto& cur_task = (*tasks)[i];
-        cur_task.resize(index_all_thread.size());
-        for(size_t j=0; j<cur_task.size(); ++j){
-            auto start_it = std::lower_bound(index_all_thread[j]->begin(), index_all_thread[j]->end(),pivot_start);
-            cur_task[j].first = int(start_it - index_all_thread[j]->begin());
-            if(i+1>=thread_num){
-                cur_task[j].second = index_all_thread[j]->size();
-            }else{
-                auto end_it = std::lower_bound(index_all_thread[j]->begin(), index_all_thread[j]->end(),pivot_end);
-                cur_task[j].second = int(end_it-index_all_thread[j]->begin());
             }
         }
     }
