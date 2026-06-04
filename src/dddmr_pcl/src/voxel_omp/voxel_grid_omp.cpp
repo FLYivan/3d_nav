@@ -34,6 +34,7 @@ const int kSampleStep = 100;
 - 需要为thread_num个线程分配任务
 输出: 每个线程的任务
 */
+__attribute__((noinline, noclone))
 size_t AssignTask(const std::vector<std::shared_ptr<std::vector<int>>>& index_all_thread, int thread_num, std::vector<std::vector<std::pair<int, int>>>* tasks){
     // 采样
     std::vector<int> sampled_data;
