@@ -54,10 +54,30 @@ size_t AssignTask(const std::vector<std::shared_ptr<std::vector<int>>>& index_al
     // 确定每个进程分配voxel索引的上下界
     std::sort(sampled_data.begin(), sampled_data.end());
     tasks->resize(thread_num);
-    if (sampled_data.empty()) {
-        for (auto& task : *tasks) task.clear();
+
+    auto assign_all_to_first_thread = [&]() {
+        for (int i = 0; i < thread_num; ++i) {
+            auto& cur_task = (*tasks)[i];
+            cur_task.resize(index_all_thread.size());
+            for (size_t j = 0; j < cur_task.size(); ++j) {
+                if (i == 0) {
+                    cur_task[j].first = 0;
+                    cur_task[j].second = static_cast<int>(index_all_thread[j]->size());
+                } else {
+                    const int end = static_cast<int>(index_all_thread[j]->size());
+                    cur_task[j].first = end;
+                    cur_task[j].second = end;
+                }
+            }
+        }
+    };
+
+    // sampled_data 为空，或数量少于线程数时，原 pivot 分配会越界
+    if (sampled_data.empty() || static_cast<int>(sampled_data.size()) < thread_num) {
+        assign_all_to_first_thread();
         return total;
     }
+
     int pad_size = sampled_data.size()%thread_num;
     int pivot_step = sampled_data.size()/thread_num;
     for(int i=0; i<thread_num; ++i){

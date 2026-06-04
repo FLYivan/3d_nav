@@ -17,6 +17,7 @@ docker cp /home/unitree/cyclonedds_ws/cyclonedds.xml dddmr_humble_l4t_dev:/root/
 
 # 在容器内
 export CYCLONEDDS_URI=file:///root/cyclonedds.xml
+source /opt/ros/humble/setup.bash
 ros2 daemon stop && ros2 topic list
 
 2、启动容器
@@ -94,3 +95,7 @@ CPU 吃紧
 
 只点到点、不需行驶中重规划
 global_plan_query_frequency 可改小或参考 mapping 用 -1
+
+
+
+用 GDB 拿到精确崩溃位置
