@@ -76,7 +76,7 @@ ros2 launch dddmr_beginner_guide hesai_xt16_navigation.launch
 切换到go2_pc2分支
     ros2 launch go2_nav 3d_nav_real_go2.launch.py
 
-colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select go2_nav
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select dddmr_pcl
 
 ## 调试调参
 
@@ -109,6 +109,10 @@ gdb -batch -ex run -ex bt --args \
 
 
 
+
+
 # 调试问题
 1、退出是容器没有执行关闭
-2、容器内没有安装dds中间件
+2、容器内没有安装dds中间件，没有配置dds
+3、增加一个3d里程计
+4、voxel_grid_omp换成最原始的，试试看是否可以
