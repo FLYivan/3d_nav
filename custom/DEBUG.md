@@ -17,6 +17,7 @@ docker cp /home/unitree/cyclonedds_ws/cyclonedds.xml dddmr_humble_l4t_dev:/root/
 
 # 在容器内
 export CYCLONEDDS_URI=file:///root/cyclonedds.xml
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 source /opt/ros/humble/setup.bash
 ros2 daemon stop && ros2 topic list
 
@@ -32,7 +33,6 @@ docker rm -f dddmr_humble_l4t_dev
 
 3、容器内编译
 cd dddmr_navigation/ && source /opt/ros/humble/setup.bash && ws_build
-
 
 4、启动建图
 cd dddmr_navigation/ && source /opt/ros/humble/setup.bash 
@@ -99,3 +99,16 @@ global_plan_query_frequency 可改小或参考 mapping 用 -1
 
 
 用 GDB 拿到精确崩溃位置
+
+source install/setup.bash
+gdb -batch -ex run -ex bt --args \
+  install/lego_loam_bor/lib/lego_loam_bor/lego_loam \
+  --ros-args \
+  --params-file install/dddmr_beginner_guide/share/dddmr_beginner_guide/config/hesai_xt16_mapping.yaml \
+  -r /lslidar_point_cloud:=/lidar_point_cloud
+
+
+
+# 调试问题
+1、退出是容器没有执行关闭
+2、容器内没有安装dds中间件

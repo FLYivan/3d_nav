@@ -209,6 +209,11 @@ pcl::VoxelGridOMP::applyFilter(PointCloud &output)
     std::vector<std::shared_ptr<std::vector<int>>> index_all_threads(threads_);
     std::vector<std::shared_ptr<std::vector<double>>> weight_all_threads(threads_);
     std::vector<std::shared_ptr<std::vector<Eigen::VectorXf, Eigen::aligned_allocator<Eigen::VectorXf>>>> centroid_all_threads(threads_);
+    for (size_t i = 0; i < threads_; ++i) {
+        index_all_threads[i]    = std::make_shared<std::vector<int>>();
+        weight_all_threads[i]   = std::make_shared<std::vector<double>>();
+        centroid_all_threads[i] = std::make_shared<std::vector<Eigen::VectorXf, Eigen::aligned_allocator<Eigen::VectorXf>>>();
+    }
 #pragma omp parallel num_threads(threads_)
     {
         int thread_id = omp_get_thread_num();
